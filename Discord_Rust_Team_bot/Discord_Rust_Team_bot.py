@@ -75,7 +75,6 @@ class MyBot(commands.Bot):
             "discord_cogs.rust.player_observation.player_observation",
             "discord_cogs.rust.rust_info.rust_info",
             "discord_cogs.rust.squad_manage.squad_manage"
-        
         ]
 
 

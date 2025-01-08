@@ -80,6 +80,8 @@ class loops(commands.Cog, commands.Bot):
                 rust_type = response_json["data"]["attributes"]["details"]["rust_type"]
                 map = response_json["data"]["attributes"]["details"]["map"]
                 server_headerimage = response_json["data"]["attributes"]["details"]["rust_headerimage"]
+                server_headerimage = server_headerimage.replace(" ", "%20")
+
                 server_url = response_json["data"]["attributes"]["details"]["rust_url"]
                 rust_world_seed = response_json["data"]["attributes"]["details"]["rust_world_seed"]
                 rust_world_size = response_json["data"]["attributes"]["details"]["rust_world_size"]
@@ -129,6 +131,7 @@ class loops(commands.Cog, commands.Bot):
                             inline=False)
 
                 Server_card.set_image(url=server_headerimage)
+                print(server_headerimage)
                 server_embeds.append(Server_card)
                 Server_Description = discord.Embed(title="Server-Description", colour=embed_side_colur, description=f"{rust_description}")
                 Server_Description.set_image(url=server_headerimage)
@@ -152,13 +155,15 @@ class loops(commands.Cog, commands.Bot):
                 # await asyncio.sleep(30)
 
                 try:
+                    await self.bot.wait_until_ready()
                     rust_server_embed_message_id = read_config(config_dir, "msgs", "rust_server_embed_message_id", "int")
                     rust_server_embed_message = await server_stats_channel.fetch_message(rust_server_embed_message_id)
                     await rust_server_embed_message.edit(embeds=server_embeds)
                     print("# asyncio.sleep(20) after rust_server_embed_message #")
-                    await asyncio.sleep(30)
+                    # await asyncio.sleep(30)
                     print(f"Discord: Edit [rust_server_embed_message] msg[{rust_server_embed_message.id}] with new embed")
                 except:
+                    await self.bot.wait_until_ready()
                     rust_server_embed_message = await server_stats_channel.send(embeds=server_embeds)
                     print(f"Discord: Send [rust_server_embed_message] msg[{rust_server_embed_message.id}] with new embed")
                     write_config(config_dir, "msgs", "rust_server_embed_message_id", rust_server_embed_message.id)

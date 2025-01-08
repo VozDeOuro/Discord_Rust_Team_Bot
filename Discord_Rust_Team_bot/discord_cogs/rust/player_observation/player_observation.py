@@ -109,14 +109,14 @@ class New_player(commands.Cog):
 
         if contains_only_numbers(player_name) == True:
             player_id = player_name
-   
+
         else:
             player_id = get_player_id_from_name(player_name, battlemetrics_server_id)
 
         if player_id == None:
             sec_to_delta = 20
             delt_str = delt_str_time(sec_to_delta)
-            
+
             s_url = f"https://www.battlemetrics.com/players?filter%5Bsearch%5D={player_name}&filter%5BplayerFlags%5D=&filter%5Bservers%5D={battlemetrics_server_id}&sort=-lastSeen"
             embed = discord.Embed(title=f"No search results with {player_name}", url=s_url, description="Try to find the player by yourself and add the ID to the next request with `id:{battlemetrics_player_id}`."+f"\n{delt_str}", color=0xff0000)
             await interaction.channel.send(embed=embed, delete_after= sec_to_delta)
@@ -160,7 +160,7 @@ class New_player(commands.Cog):
             if player_online_status == False or player_online_status == "never_played":
                 if player_online_status == "never_played":
 
-                    
+
                     embed = discord.Embed(title=f"{Player_name}", url=f"https://www.battlemetrics.com/players/{player_id}", description=("❌ | ID: "+str(player_id)), color=0xff0000)
                     value = f"❌ `Never played on that Server` ❌ | note: `{player_note}`"
                     embed.add_field(name=Player_name, value=value, inline=True)
@@ -203,7 +203,7 @@ class New_player(commands.Cog):
                     player_name_str = (read_and_delt_temp_bridge(player_name_temp_dir))
                     JSOn_data = read_json_file(player_observation_data_dir)
                     JSOn_data = add_player(JSOn_data, f"{select.values[0]}", Player_name, player_id, player_note)
-                    fill_json_file(player_observation_data_dir, JSOn_data)         
+                    fill_json_file(player_observation_data_dir, JSOn_data)
 
                     embed = discord.Embed(
                         title=f"{Player_name}", description="added to team", color=0xff8040)
@@ -250,7 +250,7 @@ class modal_New_team(ui.Modal, title="New Team",):
         placeholder="Team name",
         required=True,
         max_length=None)
-    
+
     New_team_note = ui.TextInput(
         label="Embed Titel:",
         style=discord.TextStyle.short,
@@ -584,7 +584,7 @@ class player_observation_loops(commands.Cog, commands.Bot):
                         if Online_ico == "🟢":
                             at_least_one_online = True
 
-                        value = f"{Online_ico}  {lastSeen} \n ServerTime: `{timePlayed}h` \n note: `{Player_note}` \n Player ID: [{Player_id}]({Player_Server_url})"
+                        value = f"{Online_ico}  {lastSeen} \n ServerTime: `{timePlayed}h` \n note: `{Player_note}` \n Player ID: [{Player_id}](https://www.battlemetrics.com/players/{Player_id})"
                         embed.add_field(name=Player, value=value, inline=True)
 
                 # Set the embed color based on whether at least one player is online
@@ -855,7 +855,7 @@ class auto_msg_delt_player_observation(commands.Cog):
         if message.channel.id != player_observation_channel_id:
             return
         else:
-            
+
             current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
             print(f"\nplayer_observation - {current_time}:\n")
             print(f"Msg delt in 10s ec from: {message.author.name}:")

@@ -230,7 +230,8 @@ class squad_setup(commands.Cog):
             if rust_role != None:
                 print(f"The role {role_name} already exists.")
             else:
-                print(f"The role {squad_info["squad_name"]} does not exist.")
+
+                print(f"The role {role_name} does not exist.")
                 rust_role = await guild.create_role(name=role_name, colour=role_colour)
                 squad_info["role_id"] = rust_role.id
                 channels_created = True
@@ -260,6 +261,11 @@ class squad_setup(commands.Cog):
     def create_view_with_buttons(self, squad_data, include_add_delt=False):
         view = discord.ui.View()
 
+        # Add SOS Button first
+        sos_button = discord.ui.Button(label="SOS", style=discord.ButtonStyle.danger, custom_id="squad_sos")
+        sos_button.callback = self.handle_sos_button
+        view.add_item(sos_button)
+
         # Add the dynamic role buttons
         for squad_id, squad_info in squad_data.items():
             role_button = discord.ui.Button(label=squad_info["squad_name"], custom_id=f"squad_role_{squad_id}")
@@ -278,6 +284,8 @@ class squad_setup(commands.Cog):
             view.add_item(delt_button)
 
         return view
+
+
 
     async def attach_buttons_to_message(self, message, squad_data, include_add_delt=False):
         view = self.create_view_with_buttons(squad_data, include_add_delt)
@@ -376,6 +384,7 @@ class squad_setup(commands.Cog):
         with open(self.squad_data_file, 'w') as f:
             json.dump(squad_data, f, indent=4)
 
+
         # Step 5: Update squad-lead and 🛡-squad-panel Messages
         swarp_control_channel_id = read_config(self.config_ini_dir, "channels", "swarp_control_channel_id", "int")
         squad_panel_channel_id = read_config(self.config_ini_dir, "channels", "squad_panel_channel_id", "int")
@@ -388,6 +397,48 @@ class squad_setup(commands.Cog):
 
         if squad_panel_channel:
             await self.update_channel_message(squad_panel_channel, squad_data, include_add_delt=False)
+
+
+    async def handle_sos_button(self, interaction: discord.Interaction):
+        guild = interaction.guild
+
+        # Create the temporary Voice Channel
+        category_rust_squad_id = read_config(self.config_ini_dir, "categorys", "category_rust_squad_id", "int")
+        category = discord.utils.get(guild.categories, id=category_rust_squad_id)
+        temp_channel = await guild.create_voice_channel("🔴 SOS Channel", category=category)
+        
+        with open(self.squad_data_file, 'r') as f:
+            squad_data = json.load(f)
+
+        # Move all members with relevant roles to the new channel
+        for squad_id, squad_info in squad_data.items():
+            role_id = squad_info.get("role_id")
+            role = discord.utils.get(guild.roles, id=role_id)
+            members_with_role = [member for member in guild.members if role in member.roles]
+            for member in members_with_role:
+                if member.voice:
+                    try:
+                        await member.move_to(temp_channel)
+                    except Exception as e:
+                        print(f"Could not move {member.display_name}: {e}")
+
+        embed = discord.Embed(description=f"All relevant squad members have been moved to the **SOS Channel**: <#{temp_channel.id}>.",
+                              colour=0xff0000)
+        await interaction.response.send_message(embed=embed, ephemeral=True)
+
+
+    @commands.Cog.listener()
+    async def on_voice_state_update(self, member, before, after):
+        # Check if the member left a channel
+        if before.channel is not None and before.channel != after.channel:
+            channel = before.channel
+            
+            # Check if this channel is empty
+            if len(channel.members) == 0:
+                # Optionally, check if the channel is an SOS channel by name or other criteria
+                if "SOS" in channel.name:
+                    await channel.delete()
+
 
     async def update_channel_message(self, channel, squad_data, include_add_delt):
         if "squad-lead" in channel.name:
@@ -412,7 +463,8 @@ class squad_setup(commands.Cog):
         view = self.create_view_with_buttons(squad_data, include_add_delt=include_add_delt)
         message = await channel.send(embed=embed, view=view)
 
-        config_name = f"rust_squad_{channel.name.replace(" ", "_").lower()}_mgs_id"
+        config_name = f"rust_squad_{(channel.name.replace(' ', '_').lower())}_mgs_id"
+
         write_config(self.config_ini_dir, "msgs", config_name, message.id)
 
 
