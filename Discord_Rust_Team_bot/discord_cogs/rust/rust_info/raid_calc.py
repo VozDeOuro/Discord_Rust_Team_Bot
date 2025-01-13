@@ -247,13 +247,13 @@ async def raid_calculator(ctx):
 
                         # Format the parts details
                         parts_details = " + ".join(
-                            f"{count} {get_emoji_for_cost([part])[0]} {part}" 
+                            f"(**{count} {get_emoji_for_cost([part])[0]} {part}**)" 
                             for part, count in scaled_amounts.items()
                         )
 
                         # Append to response
                         response_text += (
-                            f"\n\n**Best Method with T3:** {method_with_emojis}{parts_details} "
+                            f"\n\n**Best Method with T3:** {method_with_emojis} {parts_details} "
                             f"(Cost: **{sulfur_cost} Sulfur**)"
                         )
                     else:  # Handle single value
@@ -282,13 +282,13 @@ async def raid_calculator(ctx):
 
                         # Format the parts details
                         parts_details = " + ".join(
-                            f"{count} {get_emoji_for_cost([part])[0]} {part}" 
+                            f"(**{count} {get_emoji_for_cost([part])[0]} {part}**)" 
                             for part, count in scaled_amounts.items()
                         )
 
                         # Append to response
                         response_text += (
-                            f"\n**Best Method without T3:** {method_with_emojis}{parts_details}"
+                            f"\n**Best Method without T3:** {method_with_emojis} {parts_details}"
                             f"(Cost: **{sulfur_cost} Sulfur**)"
                         )
                     else:  # Handle single value
