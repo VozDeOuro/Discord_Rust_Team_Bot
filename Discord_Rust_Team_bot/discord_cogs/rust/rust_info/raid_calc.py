@@ -358,7 +358,7 @@ def get_emoji_for_cost(materials):
         "handmade-shell": "<:handmadeshell:1327517208125112392>",
         "F1-Granade": "<:f1grenade:1327517205998338088>",
         "Molotov": "<:molotovcoctail:1328364758843527278>",
-        "HP": "<:shield:>",
+        "HP": ":shield:",
         "Sulfur": "<:sulfurcooked:1327517183953207348>",
         "Metal Pipe": "<:pipes:1327517175426056244>",
         "Gun Powder": "<:gunpowder:1327517185601437738>",
