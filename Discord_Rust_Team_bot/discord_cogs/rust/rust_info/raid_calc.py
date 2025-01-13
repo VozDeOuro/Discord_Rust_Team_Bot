@@ -1,8 +1,7 @@
 import discord
 from discord.ui import Select, View, Modal, TextInput
 from discord.ext import commands
-
-
+from util.__funktion__ import decimal_separator
 
 sec_to_delta = 6 * 60
 
@@ -137,13 +136,13 @@ base_raid_cost_images = {
 #     "Ladder Hatch": "<:ladderhatch:1327517682290917426>",
 #     "Shop Front": "<:shopfront:1327517230933741628>",
 #     "High External Wooden Wall": "<:woodenexternalwall:1327517398169030676>",
-#     "Auto Turret": "<:autoturret:1327517227150475347>" 
+#     "Auto Turret": "<:autoturret:1327517227150475347>"
 # }
 
 async def raid_calculator(ctx):
     # Dropdown options
     options = [
-        discord.SelectOption(label=label, description=f"HP: {base_raid_cost[label]['HP']}")
+        discord.SelectOption(label=label, description=f"HP: {decimal_separator(base_raid_cost[label]['HP'])}")
         for label in base_raid_cost.keys()
     ]
 
@@ -195,14 +194,14 @@ async def raid_calculator(ctx):
                         print(f"Unknown type for {material}. Skipping...")
                         continue
 
-                response_text = f"**{amount} {selected}(s)** will require:\n"
+                response_text = f"### **{decimal_separator(amount)} {selected}(s)** will require:\n"
                 material_to_emoji = {
                     material: get_emoji_for_cost([material])[0] if get_emoji_for_cost([material]) else "❓"
                     for material in total_cost.keys()
                 }
                 response_text += "\n".join(
                     [
-                        f"- {material_to_emoji.get(material, '❓')} **{total['cost']} {material}(s)** (+{total['sulfur']} {get_emoji_for_cost(['Sulfur'])[0]})"
+                        f"- {material_to_emoji.get(material, '❓')} **{decimal_separator(total['cost'])} {material}(s)** (+{decimal_separator(total['sulfur'])} {get_emoji_for_cost(['Sulfur'])[0]})"
                         for material, total in total_cost.items()
                     ]
                 )
@@ -247,14 +246,14 @@ async def raid_calculator(ctx):
 
                         # Format the parts details
                         parts_details = " + ".join(
-                            f"(**{count} {get_emoji_for_cost([part])[0]} {part}**)" 
+                            f"(**{count} {get_emoji_for_cost([part])[0]} {part}**)"
                             for part, count in scaled_amounts.items()
                         )
 
                         # Append to response
                         response_text += (
-                            f"\n\n**Best Method with T3:** {method_with_emojis} {parts_details} "
-                            f"(Cost: **{sulfur_cost} Sulfur**)"
+                            f"\n\n### **Best Method with T3:**\n > {method_with_emojis} {parts_details}"
+                            f"\n> (Cost: **{decimal_separator(sulfur_cost)} Sulfur**)"
                         )
                     else:  # Handle single value
                         scaled_amount = best_with_t3['amount'] * amount
@@ -262,11 +261,11 @@ async def raid_calculator(ctx):
                         emoji_with_t3 = get_emoji_for_cost([best_with_t3['method']])[0]
 
                         response_text += (
-                            f"\n\n**Best Method with T3:** {emoji_with_t3}{scaled_amount}X {best_with_t3['method']} "
-                            f"(Cost: **{sulfur_cost} Sulfur**)"
+                            f"\n\n### **Best Method with T3:** \n > {emoji_with_t3}{scaled_amount}X {best_with_t3['method']} "
+                            f"\n> (**Cost**: **{decimal_separator(sulfur_cost)} Sulfur**)"
                         )
                 else:
-                    response_text += f"\n\n**Best Method with T3:** (+{best_with_t3.get('cost', 0)} Sulfur)"
+                    response_text += f"\n\n### **Best Method with T3:**\n> (+{decimal_separator(best_with_t3.get('cost', 0))} Sulfur)"
 
                 # Best method without T3
                 if best_without_t3['method']:
@@ -282,14 +281,14 @@ async def raid_calculator(ctx):
 
                         # Format the parts details
                         parts_details = " + ".join(
-                            f"(**{count} {get_emoji_for_cost([part])[0]} {part}**)" 
+                            f"(**{count} {get_emoji_for_cost([part])[0]} {part}**)"
                             for part, count in scaled_amounts.items()
                         )
 
                         # Append to response
                         response_text += (
-                            f"\n**Best Method without T3:** {method_with_emojis} {parts_details}"
-                            f"(Cost: **{sulfur_cost} Sulfur**)"
+                            f"\n### **Best Method without T3:**\n > {method_with_emojis} {parts_details}"
+                            f"\n> (Cost: **{decimal_separator(sulfur_cost)} Sulfur**)"
                         )
                     else:  # Handle single value
                         scaled_amount = best_without_t3['amount'] * amount
@@ -297,11 +296,11 @@ async def raid_calculator(ctx):
                         emoji_without_t3 = get_emoji_for_cost([best_without_t3['method']])[0]
 
                         response_text += (
-                            f"\n**Best Method without T3:** {emoji_without_t3}{scaled_amount}X {best_without_t3['method']} "
-                            f"(Cost: **{sulfur_cost} Sulfur**)"
+                            f"\n### **Best Method without T3:**\n > {emoji_without_t3}{scaled_amount}X {best_without_t3['method']} "
+                            f"\n> (Cost: **{decimal_separator(sulfur_cost)} Sulfur**)"
                         )
                 else:
-                    response_text += f"\n**Best Method without T3:** (+{best_without_t3.get('cost', 0)} Sulfur)"
+                    response_text += f"\n### **Best Method without T3:**\n >(+{decimal_separator(best_without_t3.get('cost', 0))} Sulfur)"
 
 
                 embed = discord.Embed(title=f"Raid Costs for {selected}", description=response_text)
@@ -329,18 +328,18 @@ async def raid_calculator(ctx):
 def print_best_method(structure):
     best_with_t3 = base_raid_cost[structure]['best_with_t3']
     best_without_t3 = base_raid_cost[structure]['best_without_t3']
-    
+
     # Combine multiple items into a single string with a "+" sign
     if isinstance(best_with_t3['method'], list):
         best_with_t3_method = " + ".join(best_with_t3['method'])
     else:
         best_with_t3_method = best_with_t3['method']
-    
+
     if isinstance(best_without_t3['method'], list):
         best_without_t3_method = " + ".join(best_without_t3['method'])
     else:
         best_without_t3_method = best_without_t3['method']
-    
+
     return {
         'best_with_t3': {'method': best_with_t3_method, 'amount': best_with_t3['amount']},
         'best_without_t3': {'method': best_without_t3_method, 'amount': best_without_t3['amount']}

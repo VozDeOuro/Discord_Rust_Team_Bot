@@ -1,26 +1,26 @@
 {
     "1": {
         "squad_name": "\ud83e\uddf1 Base Builder",
-        "role_id": 0,
-        "voice_channel_id": 0,
+        "role_id": 1328492725825437796,
+        "voice_channel_id": 1328492726752247893,
         "description": "All about the base"
     },
     "2": {
         "squad_name": "\u26cf\ufe0f Farmer",
-        "role_id": 0,
-        "voice_channel_id": 0,
+        "role_id": 1328492727708549231,
+        "voice_channel_id": 1328492729394532373,
         "description": "we need NODES!!!"
     },
     "3": {
         "squad_name": "\ud83c\udfdb\ufe0f Monuments",
-        "role_id": 0,
-        "voice_channel_id": 0,
+        "role_id": 1328492730409680947,
+        "voice_channel_id": 1328492731856715846,
         "description": "We need Scrap"
     },
     "1274017818903314442": {
         "squad_name": "PVPler",
-        "role_id": 0,
-        "voice_channel_id": 0,
+        "role_id": 1328492732662022229,
+        "voice_channel_id": 1328492733689757808,
         "description": "looot"
     }
 }
